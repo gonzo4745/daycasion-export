@@ -1,0 +1,439 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<meta name="robots" content="noindex, nofollow">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; connect-src https://zwitjkrmzkvrektahuml.supabase.co; img-src data:; base-uri 'none'; form-action 'none'">
+<title>DayCasion Export</title>
+<!-- Frame guard: GitHub Pages can't send X-Frame-Options, so the page stays hidden unless it is the top window. -->
+<style id="dc-frame-guard">html { display: none !important; }</style>
+<style>
+  :root { --bg:#f7f4ef; --card:#ffffff; --text:#1f1d1a; --muted:#6b655d; --line:#e6e0d6; --accent:#8a6d3b; --accent-text:#ffffff; --err:#a3312a; --ok:#2f6b3b; --note:#fdf6e9; --note-line:#efdcb5; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#161513; --card:#201e1b; --text:#f1ece4; --muted:#a59d92; --line:#34302a; --accent:#d2b07a; --accent-text:#1f1d1a; --err:#e07a72; --ok:#7cc48a; --note:#2a261f; --note-line:#4a3f2c; } }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+  main { max-width: 720px; margin: 0 auto; padding: 28px 16px 64px; }
+  header h1 { font-size: 26px; margin: 0 0 4px; }
+  header p { margin: 0; color: var(--muted); }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 20px; margin: 18px 0; }
+  .card h2 { font-size: 19px; margin: 0 0 10px; }
+  .card h3 { font-size: 16px; margin: 18px 0 6px; }
+  .muted { color: var(--muted); }
+  .small { font-size: 14px; }
+  .err { color: var(--err); }
+  .ok { color: var(--ok); }
+  .note { background: var(--note); border: 1px solid var(--note-line); border-radius: 12px; padding: 12px 14px; margin: 14px 0; }
+  label { display: block; font-weight: 600; margin: 12px 0 4px; }
+  input { width: 100%; padding: 12px; font-size: 16px; border-radius: 10px; border: 1px solid var(--line); background: var(--bg); color: var(--text); }
+  button, .btn { display: inline-block; border: 0; border-radius: 24px; padding: 12px 20px; font-size: 16px; font-weight: 600; cursor: pointer; background: var(--accent); color: var(--accent-text); text-decoration: none; }
+  button.secondary { background: transparent; color: var(--accent); border: 1px solid var(--accent); }
+  button.link { background: none; color: var(--accent); padding: 4px 0; font-weight: 500; border-radius: 0; }
+  button:disabled { opacity: .55; cursor: default; }
+  .row { display: flex; gap: 12px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+  .actions { margin-top: 16px; display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  dl.facts { display: grid; grid-template-columns: max-content 1fr; gap: 6px 16px; margin: 0; }
+  dl.facts dt { color: var(--muted); }
+  dl.facts dd { margin: 0; }
+  ul.parts { list-style: none; padding: 0; margin: 12px 0 0; }
+  ul.parts li { display: flex; gap: 12px; align-items: center; justify-content: space-between; padding: 12px 0; border-top: 1px solid var(--line); flex-wrap: wrap; }
+  ul.parts li:first-child { border-top: 0; }
+  ol { padding-left: 22px; margin: 6px 0; }
+  code, pre { font: 13px/1.5 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+  pre { background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 12px; white-space: pre-wrap; word-break: break-all; margin: 8px 0; }
+  .progress { height: 8px; background: var(--line); border-radius: 4px; overflow: hidden; margin: 10px 0; }
+  .progress > div { height: 100%; background: var(--accent); width: 0; }
+  details { margin: 8px 0; }
+  summary { cursor: pointer; font-weight: 600; }
+  footer { margin-top: 32px; font-size: 14px; color: var(--muted); }
+  footer a { color: var(--accent); }
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>Your DayCasion export</h1>
+    <p>Download your memories, photos, videos and voice recordings.</p>
+  </header>
+  <div id="app" aria-live="polite"><div class="card"><p class="muted">Loading…</p></div></div>
+  <noscript><div class="card"><p>This page needs JavaScript to sign in and download your export.</p></div></noscript>
+  <footer>
+    <p>Need help? Email <a href="mailto:info@daycasion.com">info@daycasion.com</a> ·
+      <a href="https://legal.daycasion.com/privacy.html" rel="noopener">Privacy Policy</a> ·
+      <a href="https://legal.daycasion.com/privacy-rights.html" rel="noopener">Your privacy rights</a></p>
+  </footer>
+</main>
+<script>
+(function () {
+  "use strict";
+  if (window.top !== window.self) return; // stay hidden inside frames
+  document.getElementById("dc-frame-guard").remove();
+
+  // Public project settings (the publishable key is meant for apps and web pages; access is enforced by
+  // Supabase sign-in and row-level security, never by this page).
+  var SUPABASE_URL = "https://zwitjkrmzkvrektahuml.supabase.co";
+  var PUBLISHABLE_KEY = "sb_publishable_rLS6pKOjZ80TtVGpkrYOsA_SyEq13Yy";
+  var SITE_URL = "https://export.daycasion.com/";
+  var LINK_SECONDS = 3600; // download links work for 1 hour
+  var SESSION_KEY = "dc-export-session"; // sessionStorage: cleared when the tab is closed
+
+  var app = document.getElementById("app");
+  var MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+  var UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+  // ---------- helpers ----------
+  function el(tag, attrs, children) {
+    var e = document.createElement(tag);
+    if (attrs) Object.keys(attrs).forEach(function (k) {
+      if (k === "text") e.textContent = attrs[k];
+      else if (k === "class") e.className = attrs[k];
+      else if (k.slice(0, 2) === "on") e.addEventListener(k.slice(2), attrs[k]);
+      else if (attrs[k] !== null && attrs[k] !== undefined && attrs[k] !== false) e.setAttribute(k, attrs[k] === true ? "" : attrs[k]);
+    });
+    (children || []).forEach(function (c) { if (c) e.appendChild(typeof c === "string" ? document.createTextNode(c) : c); });
+    return e;
+  }
+  function show() { app.textContent = ""; for (var i = 0; i < arguments.length; i++) if (arguments[i]) app.appendChild(arguments[i]); }
+  function card(title, children, cls) { return el("div", { class: "card" + (cls ? " " + cls : "") }, [title ? el("h2", { text: title }) : null].concat(children)); }
+  function p(text, cls) { return el("p", { text: text, class: cls || null }); }
+  function fmtDate(iso) { var d = new Date(iso); if (isNaN(d)) return ""; return MONTHS[d.getMonth()] + " " + d.getDate() + ", " + d.getFullYear(); }
+  function fmtDateTime(iso) { var d = new Date(iso); if (isNaN(d)) return "";
+    var h = d.getHours() % 12 || 12, m = ("0" + d.getMinutes()).slice(-2);
+    return fmtDate(iso) + " at " + h + ":" + m + (d.getHours() < 12 ? " AM" : " PM"); }
+  function isoDay(iso) { var d = new Date(iso); return isNaN(d) ? "" : d.toISOString().slice(0, 10); }
+  function fmtSize(b) { b = Number(b) || 0;
+    if (b >= 1073741824) return (b / 1073741824).toFixed(1) + " GB";
+    if (b >= 1048576) return Math.round(b / 1048576) + " MB";
+    return Math.max(1, Math.ceil(b / 1024)) + " KB"; }
+  function plural(n, one, many) { return n + " " + (n === 1 ? one : many); }
+
+  // ---------- address fragment (never sent to the web host) ----------
+  var frag = new URLSearchParams(location.hash.replace(/^#/, ""));
+  var wantedExport = UUID.test(frag.get("export") || "") ? frag.get("export").toLowerCase() : null;
+  var recovery = frag.get("type") === "recovery" && frag.get("access_token") ? {
+    access_token: frag.get("access_token"), refresh_token: frag.get("refresh_token") || "",
+    expires_at: Math.floor(Date.now() / 1000) + (Number(frag.get("expires_in")) || 3600) } : null;
+  var linkError = frag.get("error_description");
+  if (location.hash) history.replaceState(null, "", location.pathname + (wantedExport ? "#export=" + wantedExport : ""));
+
+  // ---------- session ----------
+  function loadSession() { try { return JSON.parse(sessionStorage.getItem(SESSION_KEY) || "null"); } catch (e) { return null; } }
+  function saveSession(s) { try { if (s) sessionStorage.setItem(SESSION_KEY, JSON.stringify(s)); else sessionStorage.removeItem(SESSION_KEY); } catch (e) {} }
+  var session = loadSession();
+
+  function api(path, opts) {
+    opts = opts || {};
+    var headers = { apikey: PUBLISHABLE_KEY, "Content-Type": "application/json" };
+    if (opts.auth && session) headers.Authorization = "Bearer " + session.access_token;
+    return fetch(SUPABASE_URL + path, { method: opts.method || "GET", headers: headers, cache: "no-store",
+        body: opts.body ? JSON.stringify(opts.body) : undefined })
+      .then(function (r) { return r.text().then(function (t) { var j = null; try { j = t ? JSON.parse(t) : null; } catch (e) {}
+        return { ok: r.ok, status: r.status, data: j }; }); })
+      .catch(function () { return { ok: false, status: 0, data: null }; });
+  }
+  function storeSession(d) {
+    session = { access_token: d.access_token, refresh_token: d.refresh_token,
+      expires_at: d.expires_at || (Math.floor(Date.now() / 1000) + (d.expires_in || 3600)),
+      email: d.user && d.user.email ? d.user.email : (session && session.email) || "" };
+    saveSession(session);
+  }
+  function ensureFresh() {
+    if (!session) return Promise.resolve(false);
+    if (session.expires_at - 60 > Date.now() / 1000) return Promise.resolve(true);
+    if (!session.refresh_token) { signOut(); return Promise.resolve(false); }
+    return api("/auth/v1/token?grant_type=refresh_token", { method: "POST", body: { refresh_token: session.refresh_token } })
+      .then(function (r) { if (r.ok && r.data && r.data.access_token) { storeSession(r.data); return true; } signOut(); return false; });
+  }
+  function authed(path, opts) {
+    return ensureFresh().then(function (ok) {
+      if (!ok) return { ok: false, status: 401, data: null };
+      opts = opts || {}; opts.auth = true;
+      return api(path, opts).then(function (r) { if (r.status === 401) { signOut(); } return r; });
+    });
+  }
+  function signOut(message) {
+    if (session) api("/auth/v1/logout", { method: "POST", auth: true });
+    session = null; saveSession(null); renderSignIn(message);
+  }
+  function networkError() { return "We couldn't reach DayCasion. Check your connection and try again."; }
+
+  // ---------- sign in ----------
+  function renderSignIn(message, isError) {
+    var email = el("input", { type: "email", id: "email", autocomplete: "username", required: true, inputmode: "email" });
+    var pw = el("input", { type: "password", id: "password", autocomplete: "current-password", required: true });
+    var status = p(message || "", isError === false ? "ok" : "err");
+    var btn = el("button", { type: "submit", text: "Sign in" });
+    var form = el("form", { novalidate: true, onsubmit: function (ev) {
+      ev.preventDefault(); status.textContent = ""; status.className = "err";
+      if (!email.value.trim() || !pw.value) { status.textContent = "Enter your email address and password."; return; }
+      btn.disabled = true;
+      api("/auth/v1/token?grant_type=password", { method: "POST", body: { email: email.value.trim(), password: pw.value } })
+        .then(function (r) {
+          btn.disabled = false;
+          if (r.ok && r.data && r.data.access_token) { pw.value = ""; storeSession(r.data); return loadExports(); }
+          var code = r.data && (r.data.error_code || r.data.error);
+          if (r.status === 0) status.textContent = networkError();
+          else if (r.status === 429 || code === "over_request_rate_limit") status.textContent = "Too many attempts. Please wait a few minutes and try again.";
+          else if (code === "email_not_confirmed") status.textContent = "Please confirm your email address first, using the link we sent you.";
+          else status.textContent = "That email address and password don't match a DayCasion account.";
+        });
+    } }, [
+      el("label", { for: "email", text: "Email address" }), email,
+      el("label", { for: "password", text: "Password" }), pw,
+      el("div", { class: "actions" }, [btn, el("button", { type: "button", class: "link", text: "Forgot your password?", onclick: function () { renderForgot(email.value.trim()); } })]),
+      status,
+    ]);
+    show(card("Sign in to download", [
+      p("Use the email address and password you use in the DayCasion app. Only you can see and download your export."),
+      form,
+    ]));
+  }
+
+  function renderForgot(prefill) {
+    var email = el("input", { type: "email", id: "remail", autocomplete: "username", value: prefill || "" });
+    var status = p("", "err");
+    var btn = el("button", { type: "submit", text: "Send reset link" });
+    show(card("Reset your password", [
+      p("Enter your DayCasion email address. If it matches an account, we'll email you a link to choose a new password."),
+      el("form", { novalidate: true, onsubmit: function (ev) {
+        ev.preventDefault(); if (!email.value.trim()) { status.textContent = "Enter your email address."; return; }
+        btn.disabled = true;
+        api("/auth/v1/recover?redirect_to=" + encodeURIComponent(SITE_URL), { method: "POST", body: { email: email.value.trim() } })
+          .then(function (r) {
+            btn.disabled = false;
+            if (r.status === 0) { status.textContent = networkError(); return; }
+            if (r.status === 429) { status.textContent = "Too many requests. Please wait a few minutes and try again."; return; }
+            renderSignIn("If that email address has a DayCasion account, a reset link is on its way. Check your inbox.", false);
+          });
+      } }, [el("label", { for: "remail", text: "Email address" }), email,
+        el("div", { class: "actions" }, [btn, el("button", { type: "button", class: "link", text: "Back to sign in", onclick: function () { renderSignIn(); } })]), status]),
+    ]));
+  }
+
+  function renderNewPassword() {
+    var pw = el("input", { type: "password", id: "newpw", autocomplete: "new-password" });
+    var pw2 = el("input", { type: "password", id: "newpw2", autocomplete: "new-password" });
+    var status = p("", "err");
+    var btn = el("button", { type: "submit", text: "Save new password" });
+    show(card("Choose a new password", [
+      el("form", { novalidate: true, onsubmit: function (ev) {
+        ev.preventDefault(); status.textContent = "";
+        if (pw.value.length < 8) { status.textContent = "Use at least 8 characters."; return; }
+        if (pw.value !== pw2.value) { status.textContent = "The two passwords don't match."; return; }
+        btn.disabled = true;
+        authed("/auth/v1/user", { method: "PUT", body: { password: pw.value } }).then(function (r) {
+          btn.disabled = false;
+          if (r.ok) { pw.value = pw2.value = ""; loadExports("Your password was changed. Use it in the DayCasion app too."); return; }
+          var msg = r.data && (r.data.msg || r.data.message);
+          status.textContent = r.status === 0 ? networkError() : (msg && /should be different|weak|characters/i.test(msg) ? msg : "Your password couldn't be changed. Request a new reset link and try again.");
+        });
+      } }, [el("label", { for: "newpw", text: "New password" }), pw, el("label", { for: "newpw2", text: "Repeat new password" }), pw2,
+        el("div", { class: "actions" }, [btn]), status]),
+    ]));
+  }
+
+  // ---------- exports ----------
+  var JOB_COLUMNS = "id,kind,status,parts,total_bytes,requested_at,ready_at,expires_at,confirmed_at,failure_class,progress,attempts,next_attempt_at";
+  function loadExports(flash) {
+    show(card(null, [p("Loading your exports…", "muted")]));
+    var jobsReq = authed("/rest/v1/export_jobs?select=" + JOB_COLUMNS + "&order=requested_at.desc&limit=10");
+    var optsReq = authed("/rest/v1/rpc/dc_export_options", { method: "POST", body: {} });
+    Promise.all([jobsReq, optsReq]).then(function (res) {
+      var jobs = res[0], opts = res[1];
+      if (!session) return; // signed out (expired session)
+      if (!jobs.ok) { show(errorCard(jobs.status === 0 ? networkError() : "Your exports couldn't be loaded. Please try again.")); return; }
+      render(jobs.data || [], opts.ok ? opts.data : null, flash);
+    });
+  }
+  function errorCard(text) {
+    return card("Something went wrong", [p(text, "err"), el("div", { class: "actions" }, [el("button", { text: "Try again", onclick: function () { loadExports(); } }), signOutButton()])]);
+  }
+  function signOutButton() { return el("button", { class: "secondary", text: "Sign out", onclick: function () { signOut(); } }); }
+  function accountBar() {
+    return el("div", { class: "row small muted" }, [el("span", { text: session && session.email ? "Signed in as " + session.email : "Signed in" }), signOutButton()]);
+  }
+  function isExpired(j) { return j.status === "expired" || (j.status === "ready" && j.expires_at && new Date(j.expires_at) <= new Date()); }
+
+  function render(jobs, opts, flash) {
+    var nodes = [accountBar()];
+    if (flash) nodes.push(el("div", { class: "note" }, [p(flash, "ok")]));
+    var target = null;
+    if (wantedExport) {
+      target = jobs.filter(function (j) { return j.id === wantedExport; })[0] || null;
+      if (!target) nodes.push(card("Export not found in this account", [
+        p("We couldn't find the export from your email in the account you're signed in to. Make sure you signed in with the email address that received it."),
+        el("div", { class: "actions" }, [signOutButton()]),
+      ]));
+    }
+    if (!target) target = jobs.filter(function (j) { return j.status === "ready" && !isExpired(j); })[0] || jobs[0] || null;
+    if (target) nodes.push(jobCard(target));
+    else if (!wantedExport) nodes.push(card("No exports yet", [
+      p("To export everything, open the DayCasion app and go to Settings > Privacy & Data > Download My Data, then tap Export All My Memories. We'll email you a link to this page when it's ready."),
+    ]));
+    if (opts) nodes.push(eligibilityCard(opts));
+    var others = jobs.filter(function (j) { return !target || j.id !== target.id; }).slice(0, 4);
+    if (others.length) nodes.push(card("Earlier exports", others.map(function (j) {
+      return el("p", { class: "small" }, [el("strong", { text: fmtDate(j.requested_at) + ": " }), document.createTextNode(statusLine(j))]);
+    })));
+    show.apply(null, nodes);
+  }
+  function statusLine(j) {
+    if (isExpired(j)) return "expired and deleted";
+    return { queued: "waiting to be prepared", processing: "being prepared", ready: "ready to download until " + fmtDate(j.expires_at),
+      failed: "couldn't be completed", cancelled: "cancelled" }[j.status] || j.status;
+  }
+  function eligibilityCard(o) {
+    var lines = [];
+    if (o.in_cooldown && o.next_eligible_at) {
+      lines.push(p("Your next free full export can be requested on " + fmtDate(o.next_eligible_at) + "."));
+      lines.push(p("Need a copy sooner, or have a legal data request? Email info@daycasion.com.", "small muted"));
+    } else if (!o.active) {
+      lines.push(p("You can request a new export in the DayCasion app: Settings > Privacy & Data > Download My Data."));
+    }
+    return lines.length ? card("Next export", lines) : null;
+  }
+
+  function jobCard(j) {
+    var album = j.kind === "premium_album";
+    var title = (album ? "Premium Memory Album" : "Memory export") + " · requested " + fmtDate(j.requested_at);
+    if (isExpired(j)) return card(title, [
+      p("This export has expired and was deleted for your privacy. Exports are available for 7 days after they're ready.", "err"),
+      p("You can request your next export in the DayCasion app when you're eligible (see below)."),
+    ]);
+    if (j.status === "queued" || j.status === "processing") return card(title, progressNodes(j));
+    if (j.status === "failed") return card(title, [
+      p(j.failure_class === "daycasion"
+        ? "We couldn't finish this export. Our support team has been alerted and will email you. Your memories are safe."
+        : "This export couldn't be completed. Please request a new export in the DayCasion app.", "err"),
+      p("Questions? Email info@daycasion.com.", "small muted"),
+    ]);
+    if (j.status === "cancelled") return card(title, [p("This request was cancelled.")]);
+    if (j.status !== "ready") return card(title, [p("This export isn't available.", "err")]);
+    return readyCard(j, title);
+  }
+
+  function progressNodes(j) {
+    var pr = j.progress && typeof j.progress === "object" ? j.progress : {};
+    var nodes = [];
+    if (j.status === "queued" && (j.attempts || 0) > 0) {
+      nodes.push(p("We hit a temporary problem and will try again automatically" + (j.next_attempt_at ? " around " + fmtDateTime(j.next_attempt_at) : "") + ". Anything already prepared is kept."));
+    } else if (j.status === "queued") {
+      nodes.push(p("Waiting to start. Large accounts can take a few hours."));
+    } else {
+      var ft = Number(pr.files_total) || 0, fd = Number(pr.files_done) || 0, bt = Number(pr.bytes_total) || 0, bd = Number(pr.bytes_done) || 0;
+      var frac = pr.phase === "verifying" ? 1 : bt > 0 ? bd / bt : ft > 0 ? fd / ft : 0;
+      var line = pr.phase === "verifying" ? "Checking every part before it's ready" : ft > 0
+        ? "Packing " + fd.toLocaleString() + " of " + ft.toLocaleString() + " files" + (bt > 0 ? " (" + fmtSize(bd) + " of " + fmtSize(bt) + ")" : "")
+        : "Gathering your memories";
+      nodes.push(p(line + "…"));
+      var bar = el("div", { class: "progress", role: "progressbar", "aria-valuemin": "0", "aria-valuemax": "100", "aria-valuenow": String(Math.round(frac * 100)) }, [el("div")]);
+      bar.firstChild.style.width = Math.max(2, Math.min(100, Math.round(frac * 100))) + "%";
+      nodes.push(bar);
+    }
+    nodes.push(p("We'll email you when it's ready, so you don't need to keep this page open.", "small muted"));
+    nodes.push(el("div", { class: "actions" }, [el("button", { class: "secondary", text: "Refresh", onclick: function () { loadExports(); } })]));
+    return nodes;
+  }
+
+  function partFileName(j, i, n) {
+    var day = isoDay(j.ready_at || j.requested_at);
+    return n === 1 ? "DayCasion-export-" + day + ".zip" : "DayCasion-export-" + day + "-part-" + (i + 1) + "-of-" + n + ".zip";
+  }
+
+  function readyCard(j, title) {
+    var parts = Array.isArray(j.parts) ? j.parts : [];
+    var n = parts.length;
+    var status = p("", "err");
+    var list = el("ul", { class: "parts" }, parts.map(function (part, i) {
+      var name = partFileName(j, i, n);
+      var btn = el("button", { text: n === 1 ? "Download" : "Download part " + (i + 1) });
+      btn.addEventListener("click", function () { download(part, name, btn, status); });
+      return el("li", null, [el("span", null, [el("strong", { text: n === 1 ? "Your export" : "Part " + (i + 1) + " of " + n }),
+        document.createTextNode(" · " + fmtSize(part.bytes))]), btn]);
+    }));
+    var confirmBtn = j.confirmed_at ? p("Thanks for confirming your download.", "ok small")
+      : el("button", { class: "secondary", text: "I've downloaded and opened it", onclick: function (ev) {
+          var b = ev.currentTarget; b.disabled = true;
+          authed("/rest/v1/rpc/dc_confirm_export", { method: "POST", body: { p_job_id: j.id } }).then(function (r) {
+            if (r.ok) b.replaceWith(p("Thanks for confirming your download.", "ok small"));
+            else { b.disabled = false; status.textContent = r.status === 0 ? networkError() : "That didn't work. Please try again."; }
+          });
+        } });
+    return card(title, [
+      el("dl", { class: "facts" }, [
+        el("dt", { text: "Ready" }), el("dd", { text: fmtDate(j.ready_at) }),
+        el("dt", { text: "Available until" }), el("dd", { text: fmtDateTime(j.expires_at) }),
+        el("dt", { text: "Total size" }), el("dd", { text: fmtSize(j.total_bytes) }),
+        el("dt", { text: "Files" }), el("dd", { text: n === 1 ? "1 ZIP file" : n + " ZIP parts" }),
+      ]),
+      el("div", { class: "note small" }, [document.createTextNode(
+        "For your privacy, this export is deleted automatically after 7 days. We recommend downloading on a computer, especially for large exports." +
+        (n > 1 ? " Download every part: you need all " + n + " to see everything." : ""))]),
+      list,
+      status,
+      instructions(j, n),
+      el("div", { class: "actions" }, [confirmBtn]),
+    ]);
+  }
+
+  function download(part, name, btn, status) {
+    status.textContent = "";
+    var path = String(part.path || "");
+    if (!/^[0-9a-f-]{36}\/[0-9a-f-]{36}\/part-\d+\.zip$/i.test(path)) { status.textContent = "This file isn't available."; return; }
+    btn.disabled = true; var label = btn.textContent; btn.textContent = "Preparing…";
+    authed("/storage/v1/object/sign/exports/" + path.split("/").map(encodeURIComponent).join("/"), { method: "POST", body: { expiresIn: LINK_SECONDS } })
+      .then(function (r) {
+        btn.disabled = false; btn.textContent = label;
+        var signed = r.data && (r.data.signedURL || r.data.signedUrl);
+        if (r.ok && signed) {
+          var url = SUPABASE_URL + "/storage/v1" + signed + (signed.indexOf("?") >= 0 ? "&" : "?") + "download=" + encodeURIComponent(name);
+          var a = el("a", { href: url, download: name, rel: "noopener" }); document.body.appendChild(a); a.click(); a.remove();
+          return;
+        }
+        if (r.status === 0) status.textContent = networkError();
+        else if (r.status === 401) status.textContent = "Please sign in again.";
+        else status.textContent = "This file isn't available any more. It may have expired. Refresh the page to check.";
+      });
+  }
+
+  function instructions(j, n) {
+    var day = isoDay(j.ready_at || j.requested_at);
+    var folder = "DayCasion Export " + day;
+    var win = n === 1
+      ? el("ol", null, [el("li", { text: "Open your Downloads folder." }), el("li", { text: "Right-click the ZIP file and choose Extract All, then Extract." }),
+          el("li", { text: "Open the new folder and double-click index.html. It opens in your web browser." })])
+      : el("ol", null, [el("li", { text: "Open your Downloads folder." }),
+          el("li", { text: "Right-click part 1 and choose Extract All. Change the destination to one folder, for example Documents\\" + folder + ", then Extract." }),
+          el("li", { text: "Do the same for every other part, choosing that same folder each time." }),
+          el("li", { text: "Open that folder and double-click index.html." })]);
+    var macCmd = 'cd ~/Downloads && mkdir -p "' + folder + '" && for f in DayCasion-export-' + day + '-part-*-of-' + n + '.zip; do ditto -x -k "$f" "' + folder + '"; done && open "' + folder + '/index.html"';
+    var mac = n === 1
+      ? el("ol", null, [el("li", { text: "Open your Downloads folder and double-click the ZIP file." }), el("li", { text: "Open the new folder and double-click index.html. It opens in your web browser." })])
+      : el("div", null, [
+          p("Double-clicking each part puts them in separate folders, so use this instead once every part is in your Downloads folder:"),
+          el("ol", null, [el("li", { text: "Open Terminal (Applications > Utilities > Terminal)." }),
+            el("li", { text: "Copy the line below, paste it into Terminal and press Return. It puts every part into one folder called \"" + folder + "\" and opens your memories." })]),
+          el("pre", { text: macCmd }),
+          el("button", { class: "secondary", text: "Copy", onclick: function (ev) { var b = ev.currentTarget;
+            (navigator.clipboard ? navigator.clipboard.writeText(macCmd) : Promise.reject()).then(function () { b.textContent = "Copied"; }, function () { b.textContent = "Select the text above and copy it"; }); } }),
+        ]);
+    return el("div", null, [
+      el("h3", { text: "Open your export" }),
+      el("details", { open: true }, [el("summary", { text: "Windows PC" }), win]),
+      el("details", { open: true }, [el("summary", { text: "Mac" }), mac]),
+      el("details", null, [el("summary", { text: "iPhone, iPad or Android" }), p(
+        "You can download the files on a phone, but opening index.html from the iPhone Files app may show a blank page, and very large exports are hard to unzip on a phone. We recommend a computer. Your photos, videos and recordings are in the \"memories\" and \"profiles\" folders inside the ZIP.")]),
+      p("index.html shows all your memories and checks that every photo, video and recording is there. Some browsers can't play Apple QuickTime (.mov) videos; Safari can.", "small muted"),
+    ]);
+  }
+
+  // ---------- start ----------
+  if (linkError) { renderSignIn("That link didn't work or has expired. Sign in, or request a new password reset link."); return; }
+  if (recovery) { session = recovery; saveSession(session); renderNewPassword(); return; }
+  if (session) loadExports(); else renderSignIn();
+})();
+</script>
+</body>
+</html>
